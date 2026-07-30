@@ -29,7 +29,9 @@ final class TenantDatabaseManager implements TenantDatabaseManagerInterface
         try {
             $this->purgeConnection();
 
-            $baseConfig = $this->config->get('database.connections.'.self::DEFAULT_CONNECTION_NAME, []);
+            $baseConfigRaw = $this->config->get('database.connections.'.self::DEFAULT_CONNECTION_NAME, []);
+            /** @var array<string, mixed> $baseConfig */
+            $baseConfig = is_array($baseConfigRaw) ? $baseConfigRaw : [];
             $tenantConnectionConfig = $this->buildTenantConnectionConfig($baseConfig, $tenant);
 
             $this->config->set('database.connections.'.self::TENANT_CONNECTION_NAME, $tenantConnectionConfig);

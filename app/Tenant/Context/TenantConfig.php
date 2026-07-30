@@ -31,20 +31,59 @@ readonly class TenantConfig
      */
     public static function fromArray(array $payload): self
     {
+        $tenantId = self::toInt($payload['tenant_id'] ?? 0, 0);
+        $uuid = self::toString($payload['uuid'] ?? '', '');
+        $companyName = self::toString($payload['company_name'] ?? '', '');
+        $databaseName = self::toString($payload['database_name'] ?? '', '');
+        $databaseHost = self::toString($payload['database_host'] ?? '', '');
+        $databasePort = self::toInt($payload['database_port'] ?? 3306, 3306);
+        $databaseUsername = self::toString($payload['database_username'] ?? '', '');
+        $databasePassword = self::toString($payload['database_password'] ?? '', '');
+        $timezone = self::toString($payload['timezone'] ?? 'UTC', 'UTC');
+        $cachePrefix = self::toString($payload['cache_prefix'] ?? null, "tenant_{$tenantId}:");
+        $storagePrefix = self::toString($payload['storage_prefix'] ?? null, "tenants/{$uuid}");
+        $isActive = (bool) ($payload['is_active'] ?? true);
+
         return new self(
-            tenantId: (int) $payload['tenant_id'],
-            uuid: (string) $payload['uuid'],
-            companyName: (string) $payload['company_name'],
-            databaseName: (string) $payload['database_name'],
-            databaseHost: (string) $payload['database_host'],
-            databasePort: (int) $payload['database_port'],
-            databaseUsername: (string) $payload['database_username'],
-            databasePassword: (string) $payload['database_password'],
-            timezone: (string) ($payload['timezone'] ?? 'UTC'),
-            cachePrefix: (string) ($payload['cache_prefix'] ?? "tenant_{$payload['tenant_id']}:"),
-            storagePrefix: (string) ($payload['storage_prefix'] ?? "tenants/{$payload['uuid']}"),
-            isActive: (bool) ($payload['is_active'] ?? true),
+            tenantId: $tenantId,
+            uuid: $uuid,
+            companyName: $companyName,
+            databaseName: $databaseName,
+            databaseHost: $databaseHost,
+            databasePort: $databasePort,
+            databaseUsername: $databaseUsername,
+            databasePassword: $databasePassword,
+            timezone: $timezone,
+            cachePrefix: $cachePrefix,
+            storagePrefix: $storagePrefix,
+            isActive: $isActive
         );
+    }
+
+    private static function toInt(mixed $value, int $default): int
+    {
+        if (is_int($value)) {
+            return $value;
+        }
+
+        if (is_numeric($value)) {
+            return intval($value);
+        }
+
+        return $default;
+    }
+
+    private static function toString(mixed $value, string $default): string
+    {
+        if (is_string($value)) {
+            return $value;
+        }
+
+        if (is_scalar($value)) {
+            return strval($value);
+        }
+
+        return $default;
     }
 
     /**

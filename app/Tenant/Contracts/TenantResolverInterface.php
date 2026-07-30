@@ -37,4 +37,11 @@ interface TenantResolverInterface
      * Invalidate any cached representation of the tenant.
      */
     public function invalidateCache(int $tenantId, ?string $domain = null): void;
+
+    /**
+     * Resolve all active tenant configurations.
+     *
+     * @return array<int, TenantConfig>
+     */
+    public function resolveAllActive(): array;
 }
